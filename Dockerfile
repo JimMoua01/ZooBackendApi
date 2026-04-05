@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
 # Copy solution and project files
-COPY *.sln .
+COPY *.slnx .
 COPY ZooApi/*.csproj ./ZooApi/
 
 # Restore dependencies
