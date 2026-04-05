@@ -1,24 +1,23 @@
-# Use official .NET SDK image to build
+# Use the official .NET SDK image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+# Set working directory
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
+# Copy solution and project files
 COPY *.sln .
 COPY ZooApi/*.csproj ./ZooApi/
+
+# Restore dependencies
 RUN dotnet restore
 
 # Copy everything else and build
 COPY ZooApi/. ./ZooApi/
 WORKDIR /app/ZooApi
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -c Release -o /app/publish
 
-# Build runtime image
+# Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /app
-COPY --from=build /app/ZooApi/out ./
-
-# Expose port (Render expects 10000 by default)
-EXPOSE 10000
-
-# Run the API
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "ZooApi.dll"]
