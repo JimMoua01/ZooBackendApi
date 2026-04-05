@@ -1,0 +1,44 @@
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build Folders
+bin/
+obj/
+out/
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+# The packages folder can be recreated with 'dotnet restore'
+*.nuget.props
+*.nuget.targets
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## VS Code
+.vscode/
+
+## Rider IDE
+.idea/
+
+## Other
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+*.dbmdl
+*.pdb
+*.cache
+*.class
+
+# Ignore secrets
+appsettings.*.json
