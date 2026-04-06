@@ -43,7 +43,8 @@ builder.Services.AddOpenApi();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy.WithOrigins("http://localhost:4200")
+        policy => policy.WithOrigins("http://localhost:4200",
+                                      "https://zoofrontend-tbuh.onrender.com")
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
