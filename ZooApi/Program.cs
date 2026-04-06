@@ -5,50 +5,51 @@ using ZooApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Get connection string: either from Render's DATABASE_URL or local appsettings.json
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 string connectionString;
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // Convert DATABASE_URL to Npgsql connection string
-    var npgsqlBuilder = new NpgsqlConnectionStringBuilder(databaseUrl)
+    // DATABASE_URL example: postgres://user:pass@host:port/dbname
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
+
+    var npgsqlBuilder = new NpgsqlConnectionStringBuilder
     {
+        Host = uri.Host,
+        Port = uri.Port,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = uri.AbsolutePath.TrimStart('/'),
         SslMode = SslMode.Require,
+        TrustServerCertificate = true
     };
     connectionString = npgsqlBuilder.ConnectionString;
 }
 else
 {
-    // Fallback to local connection string in appsettings.json
     connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 }
 
-// Add DbContext
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Add application services
 builder.Services.AddScoped<ZooService>();
 
-// Add controllers and OpenAPI
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
-// Configure CORS for local Angular frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
-        policy => policy
-            .WithOrigins("http://localhost:4200")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+        policy => policy.WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
-// Configure HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -59,7 +60,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-// Automatically apply migrations and seed database
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DataContext>();
