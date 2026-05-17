@@ -46,7 +46,9 @@ builder.Services.AddCors(options =>
         policy => policy.WithOrigins("http://localhost:4200",
                                       "https://zoofrontend-tbuh.onrender.com",
                                       "http://localhost:5173",
-                                      "https://ntczooreact.onrender.com")
+                                      "https://ntczooreact.onrender.com",
+                                      "http://localhost:8081")
+                        //policy => policy.AllowAnyOrigin()
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
@@ -59,7 +61,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
